@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import Hero from './components/Hero';
 import About from './components/About';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 
 function App() {
-  const [funMode, setFunMode] = useState(true);
+  // Fun Mode is OFF by default
+  const [funMode, setFunMode] = useState(false);
   const [bgPos, setBgPos] = useState({ x: 50, y: 50 });
   const [typed, setTyped] = useState('');
   const canvasRef = useRef(null);
 
-  // Cursor-reactive glow background
+  // Cursor-reactive glow background only when Fun Mode is ON
   useEffect(() => {
+    if (!funMode) return;
     const onMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
@@ -20,10 +21,11 @@ function App() {
     };
     window.addEventListener('pointermove', onMove);
     return () => window.removeEventListener('pointermove', onMove);
-  }, []);
+  }, [funMode]);
 
-  // Easter egg: type "hello anas" to trigger confetti
+  // Easter egg only when Fun Mode is ON
   useEffect(() => {
+    if (!funMode) return;
     const handler = (e) => {
       const nxt = (typed + e.key).toLowerCase().replace(/\s+/g, '');
       setTyped(nxt.slice(-10));
@@ -31,7 +33,7 @@ function App() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [typed]);
+  }, [funMode, typed]);
 
   const triggerConfetti = () => {
     const canvas = canvasRef.current;
@@ -42,12 +44,12 @@ function App() {
     canvas.width = w * dpr; canvas.height = h * dpr; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
     ctx.scale(dpr, dpr);
 
-    const particles = Array.from({ length: 180 }).map(() => ({
+    const particles = Array.from({ length: 160 }).map(() => ({
       x: w / 2,
       y: h / 2,
       vx: (Math.random() - 0.5) * 8,
       vy: Math.random() * -8 - 4,
-      g: 0.2 + Math.random() * 0.1,
+      g: 0.22 + Math.random() * 0.1,
       life: 120 + Math.random() * 40,
       color: `hsl(${Math.floor(Math.random() * 360)}, 80%, 60%)`,
       size: 2 + Math.random() * 3,
@@ -69,9 +71,11 @@ function App() {
 
   const gradient = useMemo(
     () => ({
-      background: `radial-gradient(600px 400px at ${bgPos.x}% ${bgPos.y}%, rgba(99,102,241,0.35), transparent 60%), radial-gradient(800px 500px at 80% 20%, rgba(236,72,153,0.25), transparent 60%), #070711`,
+      background: funMode
+        ? `radial-gradient(600px 400px at ${bgPos.x}% ${bgPos.y}%, rgba(99,102,241,0.35), transparent 60%), radial-gradient(800px 500px at 80% 20%, rgba(236,72,153,0.25), transparent 60%), #070711`
+        : `radial-gradient(600px 400px at 50% 30%, rgba(99,102,241,0.15), transparent 60%), radial-gradient(800px 500px at 80% 20%, rgba(236,72,153,0.12), transparent 60%), #070711`,
     }),
-    [bgPos]
+    [bgPos, funMode]
   );
 
   const scrollToProjects = () => {
@@ -81,7 +85,7 @@ function App() {
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden text-white" style={gradient}>
-      {/* Confetti canvas */}
+      {/* Confetti canvas (used in Fun Mode) */}
       <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-30" />
 
       {/* Top bar */}
@@ -99,12 +103,12 @@ function App() {
       </div>
 
       <Hero onScrollToProjects={scrollToProjects} funMode={funMode} />
-      <About />
-      <Projects />
+      <About funMode={funMode} />
+      <Projects funMode={funMode} />
       <Contact />
 
       <footer className="border-t border-white/10 px-6 py-10 text-center text-sm text-white/60">
-        © {new Date().getFullYear()} Mohammad Anas — Crafted with React, Framer Motion, and a dash of neon.
+        © {new Date().getFullYear()} Mohammad Anas — Crafted with React and a dash of neon.
       </footer>
     </div>
   );

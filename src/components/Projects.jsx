@@ -26,9 +26,10 @@ const projects = [
   },
 ];
 
-function useTilt() {
+function useTilt(enabled) {
   const [style, setStyle] = useState({});
   const onMove = (e) => {
+    if (!enabled) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
@@ -40,7 +41,7 @@ function useTilt() {
   return { style, onMove, onLeave };
 }
 
-export default function Projects() {
+export default function Projects({ funMode = false }) {
   const [active, setActive] = useState(null);
 
   const gradient = useMemo(
@@ -50,6 +51,7 @@ export default function Projects() {
   );
 
   const speak = (text) => {
+    if (!funMode) return;
     try {
       const utter = new SpeechSynthesisUtterance(text);
       utter.rate = 1.05; utter.pitch = 1.0; utter.lang = 'en-US';
@@ -64,11 +66,11 @@ export default function Projects() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => {
-          const { style, onMove, onLeave } = useTilt();
+          const { style, onMove, onLeave } = useTilt(funMode);
           return (
             <motion.div
               key={p.id}
-              whileHover={{ y: -4 }}
+              whileHover={funMode ? { y: -4 } : undefined}
               onMouseMove={onMove}
               onMouseLeave={onLeave}
               onClick={() => setActive(p)}
@@ -136,12 +138,14 @@ export default function Projects() {
                     </span>
                   ))}
                 </div>
-                <button
-                  onClick={() => speak(`Let me explain ${active.title}. ${active.description}`)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm hover:bg-white/20"
-                >
-                  <Volume2 className="h-4 w-4" /> Hear explanation
-                </button>
+                {funMode && (
+                  <button
+                    onClick={() => speak(`Let me explain ${active.title}. ${active.description}`)}
+                    className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm hover:bg-white/20"
+                  >
+                    <Volume2 className="h-4 w-4" /> Hear explanation
+                  </button>
+                )}
               </div>
             </motion.div>
           </motion.div>

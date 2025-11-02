@@ -11,7 +11,7 @@ export default function Hero({ onScrollToProjects, funMode }) {
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setShowLoader(false), 1400);
+    const t = setTimeout(() => setShowLoader(false), 900);
     return () => clearTimeout(t);
   }, []);
 
@@ -23,12 +23,34 @@ export default function Hero({ onScrollToProjects, funMode }) {
   };
   const handleMouseLeave = () => setMagnet({ x: 0, y: 0, active: false });
 
+  const nameHeading = (
+    <motion.h1
+      initial={funMode ? 'hidden' : false}
+      animate={funMode ? 'visible' : false}
+      viewport={{ once: true, amount: 0.6 }}
+      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+      className="mb-4 flex flex-wrap items-center justify-center gap-x-1 text-5xl font-extrabold leading-tight sm:text-6xl md:text-7xl"
+    >
+      {letters.map((char, i) => (
+        <motion.span
+          key={i}
+          variants={{ hidden: { y: 40, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
+          className={`${char === ' ' ? 'w-4 sm:w-6' : ''} inline-block`}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.h1>
+  );
+
   return (
     <section ref={containerRef} className="relative h-[100svh] w-full overflow-hidden bg-[#0a0a0f] text-white">
-      {/* 3D Scene */}
-      <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/EF7JOSsHLk16Tlw9/scene.splinecode" style={{ width: '100%', height: '100%' }} />
-      </div>
+      {/* 3D Scene: only render when Fun Mode is ON */}
+      {funMode && (
+        <div className="absolute inset-0">
+          <Spline scene="https://prod.spline.design/iO74mq3KeYTXVmpB/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
 
       {/* Gradient overlays for depth - don't block pointer */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(88,28,135,0.35),transparent_60%)]" />
@@ -37,7 +59,7 @@ export default function Hero({ onScrollToProjects, funMode }) {
       {/* Content */}
       <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-6 text-center">
         <AnimatePresence>
-          {showLoader && (
+          {funMode && showLoader && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -46,38 +68,18 @@ export default function Hero({ onScrollToProjects, funMode }) {
             >
               <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
                 <div className="h-2 w-2 animate-ping rounded-full bg-emerald-400" />
-                <p className="text-xs text-white/80">Initializing cyber realm…</p>
+                <p className="text-xs text-white/80">Loading firefly scene…</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <motion.h1
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.6 }}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.06 } },
-          }}
-          className="mb-4 flex flex-wrap items-center justify-center gap-x-1 text-5xl font-extrabold leading-tight sm:text-6xl md:text-7xl"
-        >
-          {letters.map((char, i) => (
-            <motion.span
-              key={i}
-              variants={{ hidden: { y: 40, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-              className={`${char === ' ' ? 'w-4 sm:w-6' : ''} inline-block`}
-            >
-              {char}
-            </motion.span>
-          ))}
-        </motion.h1>
+        {nameHeading}
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
+          initial={funMode ? { opacity: 0, y: 20 } : false}
+          animate={funMode ? { opacity: 1, y: 0 } : false}
+          transition={{ delay: 0.25 }}
           className="mx-auto max-w-2xl text-lg text-white/80 sm:text-xl"
         >
           Blending Imagination with Intelligence — Creative Technologist, AI/ML Enthusiast, and Web Developer.
@@ -85,12 +87,12 @@ export default function Hero({ onScrollToProjects, funMode }) {
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <motion.button
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            onMouseMove={funMode ? handleMouseMove : undefined}
+            onMouseLeave={funMode ? handleMouseLeave : undefined}
             onClick={onScrollToProjects}
             whileTap={{ scale: 0.98 }}
             style={{
-              transform: magnet.active ? `translate(${magnet.x * 0.03}px, ${magnet.y * 0.03}px)` : 'translate(0,0)',
+              transform: funMode && magnet.active ? `translate(${magnet.x * 0.03}px, ${magnet.y * 0.03}px)` : 'translate(0,0)',
             }}
             className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 px-6 py-3 font-semibold shadow-lg shadow-fuchsia-500/30 transition-colors hover:from-fuchsia-400 hover:to-indigo-500"
           >
