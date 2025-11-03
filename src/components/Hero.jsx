@@ -25,9 +25,9 @@ export default function Hero({ onScrollToProjects }) {
 
   return (
     <section ref={containerRef} className="relative h-[100svh] w-full overflow-hidden bg-[#0a0a0f] text-white">
-      {/* 3D Scene */}
+      {/* 3D Scene Cover Background */}
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/iO74mq3KeYTXVmpB/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        <Spline scene="https://prod.spline.design/z3DRq211g66TkBow/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
 
       {/* Gradient overlays for depth - don't block pointer */}
@@ -45,8 +45,8 @@ export default function Hero({ onScrollToProjects }) {
               className="absolute top-6 left-1/2 -translate-x-1/2"
             >
               <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
-                <div className="h-2 w-2 animate-ping rounded-full bg-emerald-400" />
-                <p className="text-xs text-white/80">Loading firefly scene…</p>
+                <div className="h-2 w-2 animate-ping rounded-full bg-cyan-400" />
+                <p className="text-xs text-white/80">Loading liquid portal…</p>
               </div>
             </motion.div>
           )}
