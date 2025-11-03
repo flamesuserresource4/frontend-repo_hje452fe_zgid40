@@ -26,7 +26,7 @@ const projects = [
   },
 ];
 
-function useTilt(enabled) {
+function useTilt(enabled = true) {
   const [style, setStyle] = useState({});
   const onMove = (e) => {
     if (!enabled) return;
@@ -41,7 +41,7 @@ function useTilt(enabled) {
   return { style, onMove, onLeave };
 }
 
-export default function Projects({ funMode = false }) {
+export default function Projects() {
   const [active, setActive] = useState(null);
 
   const gradient = useMemo(
@@ -51,7 +51,6 @@ export default function Projects({ funMode = false }) {
   );
 
   const speak = (text) => {
-    if (!funMode) return;
     try {
       const utter = new SpeechSynthesisUtterance(text);
       utter.rate = 1.05; utter.pitch = 1.0; utter.lang = 'en-US';
@@ -66,11 +65,11 @@ export default function Projects({ funMode = false }) {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => {
-          const { style, onMove, onLeave } = useTilt(funMode);
+          const { style, onMove, onLeave } = useTilt(true);
           return (
             <motion.div
               key={p.id}
-              whileHover={funMode ? { y: -4 } : undefined}
+              whileHover={{ y: -4 }}
               onMouseMove={onMove}
               onMouseLeave={onLeave}
               onClick={() => setActive(p)}
@@ -83,7 +82,7 @@ export default function Projects({ funMode = false }) {
                   <h3 className="text-xl font-semibold">{p.title}</h3>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/70">
                     {p.tags.map((t) => (
-                      <span key={t} className="rounded-md border border-white/10 bg-black/20 px-2 py-1">
+                      <span key={t} className="rounded-md border border-white/10 bg.black/20 px-2 py-1">
                         {t}
                       </span>
                     ))}
@@ -131,21 +130,19 @@ export default function Projects({ funMode = false }) {
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                <div className="flex flex-wrap gap-2 text-xs text.white/70">
                   {active.tags.map((t) => (
                     <span key={t} className="rounded-md border border-white/10 bg-black/20 px-2 py-1">
                       {t}
                     </span>
                   ))}
                 </div>
-                {funMode && (
-                  <button
-                    onClick={() => speak(`Let me explain ${active.title}. ${active.description}`)}
-                    className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm hover:bg-white/20"
-                  >
-                    <Volume2 className="h-4 w-4" /> Hear explanation
-                  </button>
-                )}
+                <button
+                  onClick={() => speak(`Let me explain ${active.title}. ${active.description}`)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm hover:bg-white/20"
+                >
+                  <Volume2 className="h-4 w-4" /> Hear explanation
+                </button>
               </div>
             </motion.div>
           </motion.div>

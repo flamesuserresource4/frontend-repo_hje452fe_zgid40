@@ -3,20 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const words = ['Creative', 'Innovator', 'Leader', 'Technologist'];
 
-export default function About({ funMode = false }) {
+export default function About() {
   const [index, setIndex] = useState(0);
   const cubeRef = useRef(null);
 
-  // Rotate adjectives only in Fun Mode
+  // Rotate adjectives
   useEffect(() => {
-    if (!funMode) return;
     const t = setInterval(() => setIndex((i) => (i + 1) % words.length), 1500);
     return () => clearInterval(t);
-  }, [funMode]);
+  }, []);
 
-  // gentle rotation for cube only in Fun Mode
+  // gentle rotation for cube
   useEffect(() => {
-    if (!funMode) return;
     let raf; let angle = 0;
     const animate = () => {
       angle += 0.25;
@@ -27,7 +25,7 @@ export default function About({ funMode = false }) {
     };
     raf = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(raf);
-  }, [funMode]);
+  }, []);
 
   return (
     <section id="about" className="relative mx-auto max-w-7xl px-6 py-24 text-white">
@@ -43,14 +41,14 @@ export default function About({ funMode = false }) {
             <div className="relative h-8 min-w-[130px] overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={funMode ? index : 0}
-                  initial={funMode ? { y: 20, opacity: 0 } : false}
-                  animate={funMode ? { y: 0, opacity: 1 } : false}
-                  exit={funMode ? { y: -20, opacity: 0 } : undefined}
+                  key={index}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.4 }}
                   className="absolute left-0 top-0 text-xl font-semibold text-fuchsia-300"
                 >
-                  {funMode ? words[index] : 'Focused'}
+                  {words[index]}
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -60,7 +58,7 @@ export default function About({ funMode = false }) {
             {['AI/ML', 'React', 'Next.js', 'Node', 'Python', 'Docker'].map((s) => (
               <motion.span
                 key={s}
-                whileHover={funMode ? { scale: 1.05 } : undefined}
+                whileHover={{ scale: 1.05 }}
                 className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-center backdrop-blur"
               >
                 {s}

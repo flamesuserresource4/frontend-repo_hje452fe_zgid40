@@ -5,15 +5,13 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 
 function App() {
-  // Fun Mode is OFF by default
-  const [funMode, setFunMode] = useState(false);
+  // Interactive background (always on)
   const [bgPos, setBgPos] = useState({ x: 50, y: 50 });
   const [typed, setTyped] = useState('');
   const canvasRef = useRef(null);
 
-  // Cursor-reactive glow background only when Fun Mode is ON
+  // Cursor-reactive glow background
   useEffect(() => {
-    if (!funMode) return;
     const onMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
@@ -21,11 +19,10 @@ function App() {
     };
     window.addEventListener('pointermove', onMove);
     return () => window.removeEventListener('pointermove', onMove);
-  }, [funMode]);
+  }, []);
 
-  // Easter egg only when Fun Mode is ON
+  // Easter egg: type "hello anas" for confetti
   useEffect(() => {
-    if (!funMode) return;
     const handler = (e) => {
       const nxt = (typed + e.key).toLowerCase().replace(/\s+/g, '');
       setTyped(nxt.slice(-10));
@@ -33,7 +30,7 @@ function App() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [funMode, typed]);
+  }, [typed]);
 
   const triggerConfetti = () => {
     const canvas = canvasRef.current;
@@ -71,11 +68,10 @@ function App() {
 
   const gradient = useMemo(
     () => ({
-      background: funMode
-        ? `radial-gradient(600px 400px at ${bgPos.x}% ${bgPos.y}%, rgba(99,102,241,0.35), transparent 60%), radial-gradient(800px 500px at 80% 20%, rgba(236,72,153,0.25), transparent 60%), #070711`
-        : `radial-gradient(600px 400px at 50% 30%, rgba(99,102,241,0.15), transparent 60%), radial-gradient(800px 500px at 80% 20%, rgba(236,72,153,0.12), transparent 60%), #070711`,
+      background:
+        `radial-gradient(600px 400px at ${bgPos.x}% ${bgPos.y}%, rgba(99,102,241,0.35), transparent 60%), radial-gradient(800px 500px at 80% 20%, rgba(236,72,153,0.25), transparent 60%), #070711`,
     }),
-    [bgPos, funMode]
+    [bgPos]
   );
 
   const scrollToProjects = () => {
@@ -85,7 +81,7 @@ function App() {
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden text-white" style={gradient}>
-      {/* Confetti canvas (used in Fun Mode) */}
+      {/* Confetti canvas */}
       <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-30" />
 
       {/* Top bar */}
@@ -93,18 +89,12 @@ function App() {
         <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 backdrop-blur">
           <span className="font-semibold">Anas</span> — Creative Technologist
         </div>
-        <div className="flex items-center gap-2">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
-            <input type="checkbox" checked={funMode} onChange={(e) => setFunMode(e.target.checked)} />
-            Fun mode
-          </label>
-          <a href="#contact" className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 backdrop-blur hover:bg-white/10">Contact</a>
-        </div>
+        <a href="#contact" className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 backdrop-blur hover:bg-white/10">Contact</a>
       </div>
 
-      <Hero onScrollToProjects={scrollToProjects} funMode={funMode} />
-      <About funMode={funMode} />
-      <Projects funMode={funMode} />
+      <Hero onScrollToProjects={scrollToProjects} />
+      <About />
+      <Projects />
       <Contact />
 
       <footer className="border-t border-white/10 px-6 py-10 text-center text-sm text-white/60">
